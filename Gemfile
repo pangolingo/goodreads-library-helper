@@ -8,3 +8,6 @@ gem 'sinatra'
 
 # load env config from .env files
 gem 'dotenv'
+
+# extra sinatra stuff, like reloader
+gem 'sinatra-contrib'
