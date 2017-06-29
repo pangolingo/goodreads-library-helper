@@ -3,7 +3,11 @@ require 'dotenv/load'
 require 'sinatra'
 require "sinatra/reloader" if ENV['app_env'] == 'development'
 
-
+if ENV['app_env'] == 'development'
+  app_home_url = "http://localhost:3000/"
+else
+  app_home_url = "/"
+end
 callback_url = "http://localhost:4567/oauth/callback"
 consumer = OAuth::Consumer.new(
   ENV['goodreads_api_key'],
@@ -20,7 +24,9 @@ end
 
 def authenticate!
   return if session[:access_token]
-  redirect '/oauth'
+  # redirect '/oauth'
+  # return [401, {}, 'Nser not authenticated'] and exit
+  halt 401, {}, 'User not authenticated'
 end
 
 get '/oauth' do
@@ -51,7 +57,7 @@ get '/oauth/callback' do
 
 
   # puts user.body
-  redirect '/'
+  redirect app_home_url
 
 end
 

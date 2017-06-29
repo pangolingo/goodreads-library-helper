@@ -5,10 +5,13 @@ import './App.css';
 import Header from './Header.js'
 import BookSummary from './BookSummary.js'
 import ShelfPicker from './ShelfPicker.js'
+import GoodreadsService from './GoodreadsService.js'
 
 const fakeAuth = {
   isAuthenticated: true,
 }
+
+let goodreadsService = new GoodreadsService()
 
 
 class Home extends Component {
@@ -16,6 +19,27 @@ class Home extends Component {
     super(props);
     // console.log(props)
     this.handleShelfChange = this.handleShelfChange.bind(this);
+
+    // initial state
+    this.state = {
+      shelves: []
+    }
+  }
+  componentDidMount() {
+    goodreadsService.getShelves()
+      .then(function(shelves){
+        console.log(shelves)
+        this.setState({
+          shelves
+        })
+      }.bind(this))
+      .catch(function(error){
+        if(error.name === "GoodreadsUnauthenticatedException"){
+          this.props.history.push('/login')
+        } else {
+          throw error;
+        }
+      }.bind(this));
   }
   handleShelfChange(newShelfName) {
     // alert(newShelfName);
@@ -24,16 +48,12 @@ class Home extends Component {
   render() {
     return <div>
       <h2>Home</h2>
-      <ShelfPicker shelves="" handleChange={this.handleShelfChange}></ShelfPicker>
+      <ShelfPicker shelves={this.state.shelves} handleChange={this.handleShelfChange}></ShelfPicker>
     </div>
   }
 }
 
 class Shelf extends Component {
-  constructor(props) {
-    super(props);
-    // console.log(props)
-  }
   render() {
     return <div>
       <h2>Shelf {this.props.match.params.name}</h2>
@@ -48,7 +68,7 @@ class Shelf extends Component {
 const Login = () => (
   <div>
     <h2>Log In</h2>
-    <a href="/oauth_url_here">Log in with Goodreads</a>
+    <a href="/oauth">Log in with Goodreads</a>
   </div>
 )
 
