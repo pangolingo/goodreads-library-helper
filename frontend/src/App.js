@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { BrowserRouter as Router, Route, Link, Redirect, Switch } from 'react-router-dom'
-import logo from './logo.svg';
 import './App.css';
 import Header from './Header.js'
 import BookSummary from './BookSummary.js'
@@ -18,19 +17,21 @@ class Home extends Component {
   constructor(props) {
     super(props);
     // console.log(props)
-    this.handleShelfChange = this.handleShelfChange.bind(this);
+    this.handleShelfNavigate = this.handleShelfNavigate.bind(this);
 
     // initial state
     this.state = {
-      shelves: []
+      shelvesData: {
+        shelves: []
+      }
     }
   }
   componentDidMount() {
     goodreadsService.getShelves()
-      .then(function(shelves){
-        console.log(shelves)
+      .then(function(shelvesData){
+        console.log(shelvesData)
         this.setState({
-          shelves
+          shelvesData
         })
       }.bind(this))
       .catch(function(error){
@@ -41,25 +42,55 @@ class Home extends Component {
         }
       }.bind(this));
   }
-  handleShelfChange(newShelfName) {
+  handleShelfNavigate(newShelfName) {
     // alert(newShelfName);
     this.props.history.push(`/shelves/${newShelfName}`)
   }
   render() {
     return <div>
       <h2>Home</h2>
-      <ShelfPicker shelves={this.state.shelves} handleChange={this.handleShelfChange}></ShelfPicker>
+      <ShelfPicker shelves={this.state.shelvesData.shelves} handleChange={this.handleShelfNavigate}></ShelfPicker>
     </div>
   }
 }
 
 class Shelf extends Component {
+  constructor(props) {
+    super(props);
+
+    // initial state
+    this.state = {
+      shelfData: {
+        books: []
+      }
+    }
+  }
+  componentDidMount() {
+    goodreadsService.getShelf(this.props.match.params.name)
+      .then(function(shelfData){
+        console.log(shelfData)
+        this.setState({
+          shelfData
+        })
+      }.bind(this))
+      .catch(function(error){
+        if(error.name === "GoodreadsUnauthenticatedException"){
+          this.props.history.push('/login')
+        } else {
+          throw error;
+        }
+      }.bind(this));
+  }
   render() {
+    let bookSummaries = []
+      bookSummaries = this.state.shelfData.books.map((book) => {
+        return <BookSummary key={book.id} book={book}></BookSummary>
+      });
+    console.log(this.state)
     return <div>
-      <h2>Shelf {this.props.match.params.name}</h2>
-      <BookSummary title="To Kill a Mockingbird"></BookSummary>
-      <BookSummary title="Call of the Wild"></BookSummary>
       <Link to="/">Back</Link>
+      <h2>Shelf {this.props.match.params.name}</h2>
+      {bookSummaries}
     </div>
   }
 }
@@ -68,7 +99,7 @@ class Shelf extends Component {
 const Login = () => (
   <div>
     <h2>Log In</h2>
-    <a href="/oauth">Log in with Goodreads</a>
+    <a href="/api/oauth">Log in with Goodreads</a>
   </div>
 )
 

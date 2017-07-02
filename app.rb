@@ -8,7 +8,7 @@ if ENV['app_env'] == 'development'
 else
   app_home_url = "/"
 end
-callback_url = "http://localhost:4567/oauth/callback"
+callback_url = "http://localhost:4567/api/oauth/callback"
 consumer = OAuth::Consumer.new(
   ENV['goodreads_api_key'],
   ENV['goodreads_api_secret'],
@@ -17,7 +17,7 @@ consumer = OAuth::Consumer.new(
 
 set :sessions, true
 
-regex_not_oauth = /\/(?!oauth).*/
+regex_not_oauth = /\/(?!api\/oauth).*/
 before regex_not_oauth do
   authenticate!
 end
@@ -29,7 +29,7 @@ def authenticate!
   halt 401, {}, 'User not authenticated'
 end
 
-get '/oauth' do
+get '/api/oauth' do
 
   request_token = consumer.get_request_token(:oauth_callback => callback_url)
 
@@ -39,7 +39,7 @@ get '/oauth' do
 
 end
 
-get '/oauth/callback' do
+get '/api/oauth/callback' do
   hash = {
     oauth_token: session[:request_token],
     oauth_token_secret: session[:request_token_secret]
@@ -61,17 +61,17 @@ get '/oauth/callback' do
 
 end
 
-get '/' do
+get '/api' do
   g = Guidestar.new(access_token(consumer))
   g.current_user()
 end
 
-get '/shelves' do
+get '/api/shelves' do
   g = Guidestar.new(access_token(consumer))
   g.shelves()
 end
 
-get '/shelves/:name' do
+get '/api/shelves/:name' do
   g = Guidestar.new(access_token(consumer))
   g.shelf(params['name'], params['page'] || 1, params['per_page'] || 200)
 end

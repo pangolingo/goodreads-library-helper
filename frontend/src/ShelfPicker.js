@@ -11,15 +11,17 @@ class ShelfPicker extends Component {
     this.props.handleChange(event.target.value)
   }
   render() {
-    const shelfOptions = this.props.shelves.map((shelf) =>
-      <option key={shelf.id} value={shelf.name}>{shelf.name}</option>
-    );
+    const shelfOptions = this.props.shelves.map((shelf) => {
+      let bookCountText = '';
+      if(shelf.book_count > 0){
+        bookCountText = `(${shelf.book_count} books)`
+      }
+      return <option key={shelf.id} value={shelf.name}>{shelf.name} {bookCountText}</option>
+    });
     return <div>
       <select name="shelf" onChange={this.handleChange}>
         <option value=""></option>
         {shelfOptions}
-        <option value="shelf_1">Shelf 1</option>
-        <option value="shelf_2">Shelf 2</option>
       </select>
     </div>
   }
