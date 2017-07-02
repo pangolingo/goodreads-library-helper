@@ -6,3 +6,9 @@ so you can browse them offline.
 This allows you to walk into the public library and quickly look through
 the books on your Goodreads to-read list, in order to find the ones you
 want to check out.
+
+## Todo
+
+- works offline
+- make it look nice
+- fetch multiple pages of books on a shelf
