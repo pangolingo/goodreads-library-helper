@@ -1,9 +1,10 @@
 require 'oauth'
 require 'dotenv/load'
+require 'mustermann'
 require 'sinatra'
-require "sinatra/reloader" if ENV['app_env'] == 'development'
+require "sinatra/reloader" if ENV['RACK_ENV'] == 'development'
 
-if ENV['app_env'] == 'development'
+if ENV['RACK_ENV'] == 'development'
   app_home_url = "http://localhost:3000/"
 else
   app_home_url = "/"
@@ -15,10 +16,15 @@ consumer = OAuth::Consumer.new(
   :site => "http://www.goodreads.com"
 )
 
+# sinatra settings
+set :root, File.dirname(__FILE__)
 set :sessions, true
+set :static, true
+set :public_folder, Proc.new { File.join(settings.root, 'frontend', 'build') }
 
-regex_not_oauth = /\/(?!api\/oauth).*/
-before regex_not_oauth do
+auth_urls = Mustermann.new('/api/*', except: '/api/oauth*')
+before auth_urls do
+  puts 'Authenticating'
   authenticate!
 end
 
@@ -27,6 +33,10 @@ def authenticate!
   # redirect '/oauth'
   # return [401, {}, 'Nser not authenticated'] and exit
   halt 401, {}, 'User not authenticated'
+end
+
+get '/' do
+  File.read(File.join(settings.root, 'frontend', 'build', 'index.html'))
 end
 
 get '/api/oauth' do

@@ -28,6 +28,7 @@ PLATFORMS
 
 DEPENDENCIES
   dotenv
+  mustermann
   oauth
   sinatra
   sinatra-contrib
