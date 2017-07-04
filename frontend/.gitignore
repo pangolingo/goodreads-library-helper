@@ -7,7 +7,8 @@
 /coverage
 
 # production
-/build
+# i'm going to commit built files so that i don't have to make heroku do it during the deployment
+#/build
 
 # misc
 .DS_Store
