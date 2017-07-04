@@ -92,6 +92,11 @@ get '/api/shelves/:name' do
   g.shelf(params['name'], params['page'] || 1, params['per_page'] || 200)
 end
 
+# catchall
+get '/*' do
+  File.read(File.join(settings.root, 'frontend', 'build', 'index.html'))
+end
+
 def access_token(consumer)
   hash = {
     oauth_token: session[:access_token],
