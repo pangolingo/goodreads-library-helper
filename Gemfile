@@ -1,5 +1,10 @@
 source 'https://rubygems.org'
 
+ruby '2.4.0'
+
+#webserver
+gem 'puma'
+
 # oauth 1 client
 gem 'oauth'
 

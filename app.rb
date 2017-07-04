@@ -17,6 +17,7 @@ consumer = OAuth::Consumer.new(
 )
 
 # sinatra settings
+set :server, :puma
 set :root, File.dirname(__FILE__)
 set :sessions, true
 set :static, true
