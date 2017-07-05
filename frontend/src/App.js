@@ -83,10 +83,9 @@ class Shelf extends Component {
   }
   render() {
     let bookSummaries = []
-      bookSummaries = this.state.shelfData.books.map((book) => {
-        return <BookSummary key={book.id} book={book}></BookSummary>
-      });
-    console.log(this.state)
+    bookSummaries = this.state.shelfData.books.map((book) => {
+      return <BookSummary key={book.id} book={book}></BookSummary>
+    });
     return <div>
       <Link to="/">Back</Link>
       <h2>Shelf {this.props.match.params.name}</h2>

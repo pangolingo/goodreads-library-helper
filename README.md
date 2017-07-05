@@ -12,3 +12,5 @@ want to check out.
 - works offline
 - make it look nice
 - fetch multiple pages of books on a shelf
+- add ability to clear cached data and/or versioning of cached data
+- tests
