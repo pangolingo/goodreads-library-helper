@@ -5,6 +5,7 @@ import Header from './Header.js'
 import BookSummary from './BookSummary.js'
 import ShelfPicker from './ShelfPicker.js'
 import GoodreadsService from './GoodreadsService.js'
+import localForage from 'localforage';
 
 const fakeAuth = {
   isAuthenticated: true,
@@ -60,20 +61,52 @@ class Shelf extends Component {
 
     // initial state
     this.state = {
-      shelfData: {
-        books: []
-      }
+      books: [],
+      currentpage: 1,
+      numpages: null,
+      isLoading: false
     }
+
+    this.getNextPage = this.getNextPage.bind(this)
   }
   componentDidMount() {
-    goodreadsService.getShelf(this.props.match.params.name)
+    this.setState({ isLoading: true })
+    goodreadsService.getShelf(this.props.match.params.name, 1)
       .then(function(shelfData){
         console.log(shelfData)
         this.setState({
-          shelfData
+          books: shelfData.books,
+          currentpage: shelfData.pagination.currentpage,
+          numpages: shelfData.pagination.numpages,
+          isLoading: false
         })
       }.bind(this))
       .catch(function(error){
+        this.setState({ isLoading: false })
+        if(error.name === "GoodreadsUnauthenticatedException"){
+          this.props.history.push('/login')
+        } else {
+          throw error;
+        }
+      }.bind(this));
+  }
+  getNextPage() {
+    this.setState({ isLoading: true })
+    if(this.state.currentpage >= this.state.numpages){
+      return;
+    }
+    goodreadsService.getShelf(this.props.match.params.name, this.state.currentpage + 1)
+      .then(function(shelfData){
+        console.log(shelfData)
+        this.setState({
+          books: this.state.books.concat(shelfData.books),
+          currentpage: shelfData.pagination.currentpage,
+          numpages: shelfData.pagination.numpages,
+          isLoading: false
+        })
+      }.bind(this))
+      .catch(function(error){
+        this.setState({ isLoading: false })
         if(error.name === "GoodreadsUnauthenticatedException"){
           this.props.history.push('/login')
         } else {
@@ -83,13 +116,26 @@ class Shelf extends Component {
   }
   render() {
     let bookSummaries = []
-    bookSummaries = this.state.shelfData.books.map((book) => {
+    bookSummaries = this.state.books.map((book) => {
       return <BookSummary key={book.id} book={book}></BookSummary>
     });
+
+    let pagination = <span></span>
+    if(this.state.numpages > 1){
+      pagination = <span>page {this.state.currentpage} of {this.state.numpages}</span>
+    }
+    let nextPageButton = '';
+    if(this.state.currentpage < this.state.numpages){
+      nextPageButton =  <button onClick={this.getNextPage}>Load next page</button>
+    }
+
     return <div>
       <Link to="/">Back</Link>
       <h2>Shelf {this.props.match.params.name}</h2>
       {bookSummaries}
+      {this.state.isLoading ? 'LOADING...' : ''}
+      {pagination}
+      {nextPageButton}
     </div>
   }
 }
@@ -125,9 +171,13 @@ const PrivateRoute = ({ component: Component, ...rest }) => (
 
 
 class App extends Component {
+  clearCache(){
+    localForage.clear();
+  }
   render() {
     return (
       <div className="App">
+        <button onClick={this.clearCache}>Clear Cache</button>
          <Router>
           <div>
             <Header />

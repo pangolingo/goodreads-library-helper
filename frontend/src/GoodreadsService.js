@@ -42,10 +42,10 @@ class GoodreadsService {
     // });
   }
   parseShelf(name, xmlStr){
-    console.log(xmlStr);
     let domParser = new window.DOMParser();
     let doc =  domParser.parseFromString(xmlStr, "text/xml");
     let booksElements = doc.getElementsByTagName('book');
+    let booksContainerElement = doc.getElementsByTagName('books')[0];
     let books = [];
     for (var bookElement of booksElements) {
       var authorElements = bookElement.getElementsByTagName('author');
@@ -88,36 +88,43 @@ class GoodreadsService {
       })
     }
 
+    let pagination = {
+      start: parseInt(booksContainerElement.getAttribute('start'), 10),
+      end: parseInt(booksContainerElement.getAttribute('end'), 10),
+      total: parseInt(booksContainerElement.getAttribute('total'), 10),
+      numpages: parseInt(booksContainerElement.getAttribute('numpages'), 10),
+      currentpage: parseInt(booksContainerElement.getAttribute('currentpage'), 10),
+    }
+
     let bookData = {
       queryDate: Date.now(),
-      books
+      books,
+      pagination
     };
 
     return bookData
   }
-  cacheShelf(name, bookData){
+  cacheShelf(name, bookData, page = 1){
     if(this.shouldCache){
-      return localForage.setItem(`shelf.${name}`, bookData)
+      return localForage.setItem(`shelf.${name}.${page}`, bookData)
     }
     return true;
   }
-  getShelf(name){
-    return localForage.getItem(`shelf.${name}`)
+  getShelf(name, page = 1){
+    return localForage.getItem(`shelf.${name}.${page}`)
       .then((bookData) => {
-        console.log("from getshelf: ", bookData)
         if(bookData === null || this.responseIsExpired(bookData.queryDate)){
           return this
-                  .loadShelf(name)
-                  .then(xmlStr => { console.log(xmlStr); return this.parseShelf(name, xmlStr) })
-                  .then(bookData => { this.cacheShelf(name, bookData); return bookData; });
+                  .loadShelf(name, page)
+                  .then(xmlStr => { return this.parseShelf(name, xmlStr) })
+                  .then(bookData => { this.cacheShelf(name, bookData, page); return bookData; });
         } else {
           return bookData
         }
       });
   }
-  loadShelf(name){
-    console.log('loading shelf');
-    return this.request(`/api/shelves/${name}`)
+  loadShelf(name, page = 1){
+    return this.request(`/api/shelves/${name}?page=${page}&per_page=50`)
       .then((response) => {
         this.checkResponseCode(response);
         return response.text()
@@ -143,7 +150,6 @@ class GoodreadsService {
   loadShelves(){
     return this.loadShelvesRaw()
       .then(function(xmlStr){
-        console.log(xmlStr);
         let domParser = new window.DOMParser();
         let doc =  domParser.parseFromString(xmlStr, "text/xml");
         let shelvesElements = doc.getElementsByTagName('user_shelf');
