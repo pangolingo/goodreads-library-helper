@@ -1,4 +1,4 @@
-# Goodreads Library Helper
+# Reading List Library Helper
 
 An app to list your Goodreads shelves and books, and cache them locally
 so you can browse them offline.
@@ -12,4 +12,10 @@ want to check out.
 - works offline
 - make it look nice
 - add ability to clear cached data and/or versioning of cached data
+  - also refactor caching to avoid caching by shelf page
+  - and allow caching for multiple user accounts
 - tests
+- enforce Goodread's API terms of use:
+  - no more than 1 request per endpoint per second
+  - display Goodreads name/logo
+  - link back to the Goodreads page where the data appears

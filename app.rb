@@ -6,7 +6,7 @@ require "sinatra/reloader" if ENV['RACK_ENV'] == 'development'
 
 if ENV['RACK_ENV'] == 'production'
   app_home_url = "/"
-  callback_url = "http://goodreads-library-helper.herokuapp.com/api/oauth/callback"
+  callback_url = "http://reading-list-library-helper.herokuapp.com/api/oauth/callback"
 elsif ENV['RACK_ENV'] == 'staging'
   app_home_url = "/"
   callback_url = "http://localhost:4567/api/oauth/callback"
