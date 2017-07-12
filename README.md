@@ -9,6 +9,7 @@ want to check out.
 
 ## Todo
 
+### major
 - works offline
 - make it look nice
 - add ability to clear cached data and/or versioning of cached data
@@ -19,3 +20,10 @@ want to check out.
   - no more than 1 request per endpoint per second
   - display Goodreads name/logo
   - link back to the Goodreads page where the data appears
+
+### minor
+
+- in production force a redirect to HTTPs
+- enable cache-control in production
+- enable gzip compression
+- login page should redirect to home if already logged in

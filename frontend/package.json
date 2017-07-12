@@ -21,5 +21,6 @@
     "/api": {
       "target": "http://localhost:4567"
     }
-  }
+  },
+  "homepage": "https://reading-list-library-helper.herokuapp.com"
 }
