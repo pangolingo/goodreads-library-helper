@@ -3,6 +3,7 @@ GEM
   specs:
     backports (3.8.0)
     dotenv (2.2.1)
+    jwt (1.5.6)
     multi_json (1.12.1)
     mustermann (1.0.0)
     oauth (0.5.3)
@@ -29,7 +30,7 @@ PLATFORMS
 
 DEPENDENCIES
   dotenv
-  mustermann
+  jwt
   oauth
   puma
   sinatra
