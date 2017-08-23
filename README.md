@@ -20,6 +20,7 @@ want to check out.
   - no more than 1 request per endpoint per second
   - display Goodreads name/logo
   - link back to the Goodreads page where the data appears
+- favoriting books so they appear at the top of the list
 
 ### minor
 
