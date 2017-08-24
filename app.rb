@@ -46,6 +46,12 @@ def authenticate!
   halt 401, {}, 'User not authenticated'
 end
 
+def default_headers
+  headers = {
+    "Access-Control-Allow-Origin" => "*",
+  }
+end
+
 
 
 # ==============
@@ -54,8 +60,22 @@ end
 
 # require authentication on all API urls
 before '/api*' do
+  pass if request.request_method == 'OPTIONS'
+
   puts 'Authenticating'
   @access_token = authenticate!
+end
+
+# respond to CORS requests
+options '*' do
+  # res.header("Access-Control-Allow-Origin", "*");
+  # res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  headers = {
+    "Access-Control-Allow-Origin" => "*",
+    "Access-Control-Allow-Headers" => "Origin, X-Requested-With, Content-Type, Accept, Authorization",
+    "Access-Control-Allow-Methods" => "POST, GET, OPTIONS, DELETE"
+  }
+  [ 200, headers, '' ]
 end
 
 get '/' do
@@ -115,17 +135,17 @@ end
 
 get '/api/?' do
   g = Guidestar.new(@access_token)
-  g.current_user()
+  [ 200, default_headers, g.current_user() ]
 end
 
 get '/api/shelves/?' do
   g = Guidestar.new(@access_token)
-  g.shelves()
+  [ 200, default_headers, g.shelves() ]
 end
 
 get '/api/shelves/:name/?' do
   g = Guidestar.new(@access_token)
-  g.shelf(params['name'], params['page'] || 1, params['per_page'] || 200)
+  [200, default_headers, g.shelf(params['name'], params['page'] || 1, params['per_page'] || 200) ]
 end
 
 
