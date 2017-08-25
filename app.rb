@@ -85,6 +85,7 @@ end
 get '/oauth/?' do
   client_callback_url = params[:callback_url]
   server_callback_url = "#{request.base_url}/oauth/callback"
+  puts "callback url: ", server_callback_url
 
   halt 400, {}, 'No callback url specified' unless client_callback_url
 
