@@ -9,7 +9,7 @@ require './guidestar'
 $consumer = OAuth::Consumer.new(
   ENV['GOODREADS_API_KEY'],
   ENV['GOODREADS_API_SECRET'],
-  :site => "http://www.goodreads.com"
+  :site => "https://www.goodreads.com"
 )
 
 # sinatra settings
